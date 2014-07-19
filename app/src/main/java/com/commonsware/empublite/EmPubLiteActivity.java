@@ -1,12 +1,13 @@
 package com.commonsware.empublite;
 
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class EmPubLiteActivity extends ActionBarActivity {
+public class EmPubLiteActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +20,7 @@ public class EmPubLiteActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.em_pub_lite, menu);
+        getMenuInflater().inflate(R.menu.options, menu);
         return true;
     }
 
@@ -28,9 +29,13 @@ public class EmPubLiteActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                return(true);
+            case R.id.about:
+                return(true);
+            case R.id.help:
+                return(true);
         }
         return super.onOptionsItemSelected(item);
     }
