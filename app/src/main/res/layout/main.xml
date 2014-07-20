@@ -16,4 +16,10 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"/>
+
 </RelativeLayout>
