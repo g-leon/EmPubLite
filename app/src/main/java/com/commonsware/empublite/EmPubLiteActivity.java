@@ -10,21 +10,23 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-public class EmPubLiteActivity extends FragmentActivity {
+public class EmPubLiteActivity extends ActionBarActivity {
 
+    private static final String MODEL = "model";
     private ViewPager pager = null;
     private ContentsAdapter adapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
+        if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
+            getSupportFragmentManager().beginTransaction().add(new ModelFragment(), MODEL).commit();
+        }
+
+        setContentView(R.layout.main);
         pager = (ViewPager)findViewById(R.id.pager);
-        adapter = new ContentsAdapter(this);
-        pager.setAdapter(adapter);
-        findViewById(R.id.progressBar1).setVisibility(View.GONE);
-        findViewById(R.id.pager).setVisibility(View.VISIBLE);
     }
 
 
@@ -42,6 +44,7 @@ public class EmPubLiteActivity extends FragmentActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case android.R.id.home:
+                pager.setCurrentItem(0, false);
                 return(true);
             case R.id.about:
                 Intent i = new Intent(this, SimpleContentActivity.class);
@@ -55,5 +58,12 @@ public class EmPubLiteActivity extends FragmentActivity {
                 return(true);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void setupPager(BookContents contents) {
+        adapter = new ContentsAdapter(this, contents);
+        pager.setAdapter(adapter);
+        findViewById(R.id.progressBar1).setVisibility(View.GONE);
+        findViewById(R.id.pager).setVisibility(View.VISIBLE);
     }
 }
