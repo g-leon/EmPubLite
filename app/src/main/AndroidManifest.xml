@@ -29,6 +29,8 @@
         </activity>
         <activity android:name="SimpleContentActivity">
         </activity>
+        <activity android:name="Preferences">
+        </activity>
     </application>
 
 
