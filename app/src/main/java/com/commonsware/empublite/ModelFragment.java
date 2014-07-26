@@ -2,9 +2,11 @@ package com.commonsware.empublite;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
@@ -19,6 +21,8 @@ public class ModelFragment extends Fragment {
 
     private BookContents contents = null;
     private ContentsLoadTask contentsTask = null;
+    private SharedPreferences prefs = null;
+    private PrefsLoadTask prefsTask = null;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -28,12 +32,19 @@ public class ModelFragment extends Fragment {
     }
 
     synchronized private void deliverModel() {
-        if (contents != null) {
-            ((EmPubLiteActivity) getActivity()).setupPager(contents);
-        } else {
+        if (prefs != null && contents != null) {
+            ((EmPubLiteActivity)getActivity()).setupPager(prefs, contents);
+        }
+        else {
+            if (prefs == null && prefsTask == null) {
+                prefsTask=new PrefsLoadTask();
+                executeAsyncTask(prefsTask,
+                        getActivity().getApplicationContext());
+            }
             if (contents == null && contentsTask == null) {
-                contentsTask = new ContentsLoadTask();
-                executeAsyncTask(contentsTask, getActivity().getApplicationContext());
+                contentsTask=new ContentsLoadTask();
+                executeAsyncTask(contentsTask,
+                        getActivity().getApplicationContext());
             }
         }
     }
@@ -80,6 +91,25 @@ public class ModelFragment extends Fragment {
             } else {
                 Log.e(getClass().getSimpleName(), "Exception loading contents", e);
             }
+        }
+    }
+
+
+    private class PrefsLoadTask extends AsyncTask<Context, Void, Void> {
+        SharedPreferences localPrefs = null;
+
+        @Override
+        protected Void doInBackground(Context... ctxt) {
+            localPrefs = PreferenceManager.getDefaultSharedPreferences(ctxt[0]);
+            localPrefs.getAll();
+            return (null);
+        }
+
+        @Override
+        public void onPostExecute(Void arg0) {
+            ModelFragment.this.prefs = localPrefs;
+            ModelFragment.this.prefsTask = null;
+            deliverModel();
         }
     }
 }
