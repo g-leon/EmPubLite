@@ -15,8 +15,8 @@ public class EmPubLiteActivity extends ActionBarActivity {
 
     private static final String MODEL = "model";
     private static final String PREF_LAST_POSITION = "lastPosition";
-    private static final String PREF_SAVE_LAST_POSITION="saveLastPosition";
-    private static final String PREF_KEEP_SCREEN_ON="keepScreenOn";
+    private static final String PREF_SAVE_LAST_POSITION = "saveLastPosition";
+    private static final String PREF_KEEP_SCREEN_ON = "keepScreenOn";
     private ViewPager pager = null;
     private ContentsAdapter adapter = null;
     private SharedPreferences prefs = null;
@@ -63,6 +63,11 @@ public class EmPubLiteActivity extends ActionBarActivity {
                 return (true);
             case R.id.settings:
                 startActivity(new Intent(this, Preferences.class));
+                return (true);
+            case R.id.notes:
+                i = new Intent(this, NoteActivity.class);
+                i.putExtra(NoteActivity.EXTRA_POSITION, pager.getCurrentItem());
+                startActivity(i);
                 return (true);
         }
         return super.onOptionsItemSelected(item);

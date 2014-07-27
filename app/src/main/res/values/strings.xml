@@ -14,5 +14,9 @@
     is in the foreground</string>
     <string name="keepscreenon_title">Keep Screen On</string>
     <string name="settings">Settings</string>
+    <string name="on_upgrade_error">Implementation of the SQLiteOpenHelp is not ready</string>
+    <string name="hint">Write your note here</string>
+    <string name="notes">Notes</string>
+    <string name="delete">Delete</string>
 
 </resources>
