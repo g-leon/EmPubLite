@@ -1,6 +1,9 @@
 package com.commonsware.empublite;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -20,18 +23,26 @@ public class EmPubLiteActivity extends ActionBarActivity {
     private ViewPager pager = null;
     private ContentsAdapter adapter = null;
     private SharedPreferences prefs = null;
+    private ModelFragment model = null;
+    private BroadcastReceiver onUpdate = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent i) {
+            model.updateBook();
+            abortBroadcast();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
         if (getSupportFragmentManager().findFragmentByTag(MODEL) == null) {
-            getSupportFragmentManager().beginTransaction().add(new ModelFragment(), MODEL).commit();
+            model = new ModelFragment();
+            getSupportFragmentManager().beginTransaction().add(model, MODEL).commit();
+        } else {
+            model = (ModelFragment) getSupportFragmentManager().findFragmentByTag(MODEL);
         }
-
         setContentView(R.layout.main);
         pager = (ViewPager) findViewById(R.id.pager);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
 
@@ -69,12 +80,16 @@ public class EmPubLiteActivity extends ActionBarActivity {
                 i.putExtra(NoteActivity.EXTRA_POSITION, pager.getCurrentItem());
                 startActivity(i);
                 return (true);
+            case R.id.update:
+                startService(new Intent(this, DownloadCheckService.class));
+                return (true);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onPause() {
+        unregisterReceiver(onUpdate);
         if (prefs != null) {
             int position = pager.getCurrentItem();
             prefs.edit().putInt(PREF_LAST_POSITION, position).apply();
@@ -88,7 +103,11 @@ public class EmPubLiteActivity extends ActionBarActivity {
         if (prefs != null) {
             pager.setKeepScreenOn(prefs.getBoolean(PREF_KEEP_SCREEN_ON, false));
         }
+        IntentFilter f = new IntentFilter(DownloadInstallService.ACTION_UPDATE_READY);
+        f.setPriority(1000);
+        registerReceiver(onUpdate, f);
     }
+
 
     void setupPager(SharedPreferences prefs, BookContents contents) {
         this.prefs = prefs;

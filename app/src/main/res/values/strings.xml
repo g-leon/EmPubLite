@@ -20,5 +20,8 @@
     <string name="delete">Delete</string>
     <string name="share">Share</string>
     <string name="share_title">Share Notes</string>
+    <string name="download_update">Download Update</string>
+    <string name="update_title">EmPub Lite Update</string>
+    <string name="update_description">A new edition of book content</string>
 
 </resources>

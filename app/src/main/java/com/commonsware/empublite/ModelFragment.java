@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -36,20 +38,20 @@ public class ModelFragment extends Fragment {
 
     synchronized private void deliverModel() {
         if (prefs != null && contents != null) {
-            ((EmPubLiteActivity)getActivity()).setupPager(prefs, contents);
-        }
-        else {
+            ((EmPubLiteActivity) getActivity()).setupPager(prefs, contents);
+        } else {
             if (prefs == null && prefsTask == null) {
-                prefsTask=new PrefsLoadTask();
-                executeAsyncTask(prefsTask,
-                        getActivity().getApplicationContext());
-            }
-            if (contents == null && contentsTask == null) {
-                contentsTask=new ContentsLoadTask();
-                executeAsyncTask(contentsTask,
-                        getActivity().getApplicationContext());
+                prefsTask = new PrefsLoadTask();
+                executeAsyncTask(prefsTask, getActivity().getApplicationContext());
+            } else if (contents == null && contentsTask == null) {
+                updateBook();
             }
         }
+    }
+
+    void updateBook() {
+        contentsTask = new ContentsLoadTask();
+        executeAsyncTask(contentsTask, getActivity().getApplicationContext());
     }
 
     @TargetApi(11)
@@ -73,18 +75,35 @@ public class ModelFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Context... ctxt) {
+            String updateDir = prefs.getString(DownloadInstallService.PREF_UPDATE_DIR, null);
             try {
                 StringBuilder buf = new StringBuilder();
-                InputStream json = ctxt[0].getAssets().open("book/contents.json");
+                InputStream json = null;
+                if (updateDir != null && new File(updateDir).exists()) {
+                    json = new FileInputStream(new File(new File(updateDir), "contents.json"));
+                } else {
+                    json = ctxt[0].getAssets().open("book/contents.json");
+                }
                 BufferedReader in = new BufferedReader(new InputStreamReader(json));
                 String str;
                 while ((str = in.readLine()) != null) {
                     buf.append(str);
                 }
                 in.close();
-                localContents = new BookContents(new JSONObject(buf.toString()));
+                if (updateDir != null && new File(updateDir).exists()) {
+                    localContents = new BookContents(new JSONObject(buf.toString()), new File(updateDir));
+                } else {
+                    localContents = new BookContents(new JSONObject(buf.toString()));
+                }
             } catch (Exception e) {
                 this.e = e;
+            }
+            String prevUpdateDir = prefs.getString(DownloadInstallService.PREF_PREV_UPDATE, null);
+            if (prevUpdateDir != null) {
+                File toBeDeleted = new File(prevUpdateDir);
+                if (toBeDeleted.exists()) {
+                    deleteDir(toBeDeleted);
+                }
             }
             return (null);
         }
@@ -103,6 +122,7 @@ public class ModelFragment extends Fragment {
 
 
     private class PrefsLoadTask extends AsyncTask<Context, Void, Void> {
+
         SharedPreferences localPrefs = null;
 
         @Override
@@ -118,5 +138,18 @@ public class ModelFragment extends Fragment {
             ModelFragment.this.prefsTask = null;
             deliverModel();
         }
+    }
+
+    private static boolean deleteDir(File dir) {
+        if (dir.exists() && dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            for (File child : children) {
+                boolean ok = deleteDir(child);
+                if (!ok) {
+                    return (false);
+                }
+            }
+        }
+        return (dir.delete());
     }
 }
