@@ -66,6 +66,9 @@ public class NoteFragment extends Fragment implements DatabaseHelper.NoteListene
             DatabaseHelper.getInstance(getActivity()).deleteNoteAsync(position);
             ((NoteActivity) getActivity()).closeNotes();
             return (true);
+        } else if (item.getItemId() == R.id.share) {
+            ((NoteActivity) getActivity()).sendNotes(editor.getText().toString());
+            return (true);
         }
         return (super.onOptionsItemSelected(item));
     }

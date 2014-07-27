@@ -1,5 +1,6 @@
 package com.commonsware.empublite;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -24,5 +25,12 @@ public class NoteActivity extends FragmentActivity {
 
     void closeNotes() {
         finish();
+    }
+
+    void sendNotes(String prose) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_TEXT, prose);
+        startActivity(Intent.createChooser(i, getString(R.string.share_title)));
     }
 }
