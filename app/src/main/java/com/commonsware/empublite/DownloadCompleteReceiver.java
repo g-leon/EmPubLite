@@ -7,6 +7,8 @@ import android.os.Environment;
 
 import java.io.File;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 
 public class DownloadCompleteReceiver extends BroadcastReceiver {
 
@@ -16,7 +18,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                         DownloadCheckService.UPDATE_FILENAME);
         if (update.exists()) {
-            ctxt.startService(new Intent(ctxt, DownloadInstallService.class));
+            WakefulIntentService.sendWakefulWork(ctxt, DownloadInstallService.class);
         }
     }
 }

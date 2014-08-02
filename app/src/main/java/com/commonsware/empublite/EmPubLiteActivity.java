@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 
 public class EmPubLiteActivity extends ActionBarActivity {
 
@@ -43,6 +45,7 @@ public class EmPubLiteActivity extends ActionBarActivity {
         setContentView(R.layout.main);
         pager = (ViewPager) findViewById(R.id.pager);
         getSupportActionBar().setHomeButtonEnabled(true);
+        UpdateReceiver.scheduleAlarm(this);
     }
 
 
@@ -81,7 +84,7 @@ public class EmPubLiteActivity extends ActionBarActivity {
                 startActivity(i);
                 return (true);
             case R.id.update:
-                startService(new Intent(this, DownloadCheckService.class));
+                WakefulIntentService.sendWakefulWork(this, DownloadCheckService.class);
                 return (true);
         }
         return super.onOptionsItemSelected(item);

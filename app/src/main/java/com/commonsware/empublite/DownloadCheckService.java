@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class DownloadCheckService extends IntentService {
+public class DownloadCheckService extends WakefulIntentService {
 
     private static final String UPDATE_URL = "http://misc.commonsware.com/empublite-update.json";
     private static final String UPDATE_BASEDIR = "updates";
@@ -32,7 +34,7 @@ public class DownloadCheckService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void doWakefulWork(Intent intent) {
         BufferedReader reader = null;
         try {
             URL url = new URL(UPDATE_URL);
