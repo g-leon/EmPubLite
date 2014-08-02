@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity;
 public class SimpleContentActivity extends FragmentActivity {
 
     public static final String EXTRA_FILE = "file";
+    private static final String HELP = "help";
+    private static final String ABOUT = "about";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
