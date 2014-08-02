@@ -23,5 +23,7 @@
     <string name="download_update">Download Update</string>
     <string name="update_title">EmPub Lite Update</string>
     <string name="update_description">A new edition of book content</string>
+    <string name="update_desc">Click here to open the updated book!</string>
+    <string name="update_complete">EmPub Lite Updated!</string>
 
 </resources>
